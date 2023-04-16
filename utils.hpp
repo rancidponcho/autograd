@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -115,15 +116,14 @@ void plot(const std::vector<double>& x, const std::vector<double>& y, const int 
 // recursively print the graph of a value node
 void graph(const Value& v, std::unordered_set<const Value*>& visited, int indent, int precision) {
     // Print the current value node
-
     std::cout << std::string(indent, ' ') << "+---" << v.get_label() << "[ " << std::fixed << std::setprecision(precision) << v.get() << " ][ " << v.get_grad() << " ]" << (v.get_op().empty() ? "" : "(" + v.get_op() + ")") << std::endl;
 
     // Recursively print the previous value nodes
-    for (const Value& prev : v.get_prev()) {
+    for (const Value* prev : v.get_prev()) {
         // If we haven't visited this node yet, print it
-        if (!visited.count(&prev)) {
-            visited.insert(&prev);
-            graph(prev, visited, indent + 4, precision);
+        if (!visited.count(prev)) {
+            visited.insert(prev);
+            graph(*prev, visited, indent + 4, precision);
         }
         // Otherwise, just print an arrow to indicate a previously visited node
         else {
