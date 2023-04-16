@@ -5,50 +5,46 @@
 #include <cmath>
 #include <iostream>
 
-double lol(double h = {}) {
-    Value a{2, "a"};
-    Value b{-3, "b"};
-    Value c{10, "c"};
-    Value e{a * b};
-    e.label("e");
-    Value d{e + c};
-    d.label("d");
-    Value f(-2, "f");
-    Value L{d * f};
-    L.label("L");
-
-    return L.get();
-}
-
 double tan_h(double x) {
     return std::tanh(x);
 }
 
 int main() {
-    double h = 0.001f;
+    // inputs
+    Value x1{2.0, "x1"};
+    x1.grad(-3 * 0.5);
+    Value x2{0.0, "x2"};
+    x2.grad(1 * 0.5);
+    // weights
+    Value w1{-3.0, "w1"};
+    w1.grad(2 * 0.5);
+    Value w2{1.0, "w2"};
+    w2.grad(0 * 0.5);
+    // bias
+    Value b{6.8813735870195432, "b"};
+    b.grad(0.5);
+    // dot product
+    Value x1w1 = x1 * w1;
+    x1w1.label("x1w1");
+    x1w1.grad(0.5);
 
-    Value a{2, "a"};
-    a.grad(-2 * -3);
-    Value b{-3, "b"};
-    b.grad(-2 * 2);
-    Value c{10, "c"};
-    c.grad(-2);
-    Value e{a * b};
-    e.label("e");
-    e.grad(-2);
-    Value d{e + c};
-    d.label("d");
-    d.grad(-2 * 1);
-    Value f(-2, "f");
-    f.grad(4 * 1);
-    Value L{d * f};
-    L.label("L");
-    L.grad(1);
+    Value x2w2 = x2 * w2;
+    x2w2.label("x2w2");
+    x2w2.grad(0.5);
 
-    graph(L);
-    std::vector<double> x = arange(-5, 5, .2);
-    std::vector<double> y = apply_function(x, tanh);
-    plot(x, y);
+    Value x1w1_x2w2 = x1w1 + x2w2;
+    x1w1_x2w2.label("x1w1 + x2w2");
+    x1w1_x2w2.grad(0.5);
+    // add bias
+    Value n = x1w1_x2w2 + b;
+    n.label("n");
+    n.grad(0.5);  // derivative of tanh is 1 - tanh^2
+    // output
+    Value o = n.tanh();
+    o.label("o");
+    o.grad(1);
+
+    graph(o);
 
     return 0;
 }

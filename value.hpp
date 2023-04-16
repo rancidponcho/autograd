@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 class Value {
    public:
@@ -24,6 +25,10 @@ class Value {
     // *
     Value operator*(const Value& other) const {
         return Value(this->_data * other._data, {}, std::vector<Value>{*this, other}, "*");
+    }
+
+    Value tanh() {
+        return Value(std::tanh(this->_data), {}, std::vector<Value>{*this}, "tanh");  // tanh = (exp(x) - exp(-x)) / (exp(x) + exp(-x))
     }
 
     double get() const { return _data; }
