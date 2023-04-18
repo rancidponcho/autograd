@@ -11,16 +11,16 @@
 
 #include "value.hpp"
 
-std::vector<double> arange(double start, double end, double step) {
-    std::vector<double> result;
-    for (double i = start; i < end; i += step) {
+std::vector<float> arange(float start, float end, float step) {
+    std::vector<float> result;
+    for (float i = start; i < end; i += step) {
         result.push_back(i);
     }
     return result;
 }
 
-std::vector<double> apply_function(const std::vector<double>& input, double (*func)(double)) {
-    std::vector<double> result;
+std::vector<float> apply_function(const std::vector<float>& input, float (*func)(float)) {
+    std::vector<float> result;
     result.reserve(input.size());
     for (const auto& i : input) {
         result.push_back(func(i));
@@ -28,26 +28,26 @@ std::vector<double> apply_function(const std::vector<double>& input, double (*fu
     return result;
 }
 
-void plot(const std::vector<double>& x, const std::vector<double>& y, const int plotWidth = 100, const int plotHeight = 25) {
+void plot(const std::vector<float>& x, const std::vector<float>& y, const int plotWidth = 100, const int plotHeight = 25) {
     const char x_axis_char = '_';
     const char y_axis_char = '|';
     const char plotChar = '*';
     const char blankChar = ' ';
 
     // Find min and max values for both x and y axes
-    double minX = *min_element(x.begin(), x.end());
-    double maxX = *max_element(x.begin(), x.end());
-    double minY = *min_element(y.begin(), y.end());
-    double maxY = *max_element(y.begin(), y.end());
+    float minX = *min_element(x.begin(), x.end());
+    float maxX = *max_element(x.begin(), x.end());
+    float minY = *min_element(y.begin(), y.end());
+    float maxY = *max_element(y.begin(), y.end());
 
     // Calculate the increment for axis labels
-    double xIncrement = (maxX - minX) / plotWidth;
-    double yIncrement = (maxY - minY) / plotHeight;
+    float xIncrement = (maxX - minX) / plotWidth;
+    float yIncrement = (maxY - minY) / plotHeight;
 
     // x-axis labels
     // Determine the number of decimal places needed for x-axis labels
     int xDecimals = 0;
-    double xStep = xIncrement;
+    float xStep = xIncrement;
     while (xStep < 1) {
         xStep *= 10;
         ++xDecimals;
@@ -95,7 +95,7 @@ void plot(const std::vector<double>& x, const std::vector<double>& y, const int 
     std::cout << "\t";
     for (int i = 0; i <= plotWidth; ++i) {
         if (i % (plotWidth / 10) == 0) {
-            double xValue = minX + i * xIncrement;
+            float xValue = minX + i * xIncrement;
             std::cout << std::fixed << std::setprecision(xDecimals) << xValue;
 
             // calculate the length of the number label string
@@ -111,29 +111,4 @@ void plot(const std::vector<double>& x, const std::vector<double>& y, const int 
         }
     }
     std::cout << std::endl;
-}
-
-// recursively print the graph of a value node
-void graph(const Value& v, std::unordered_set<const Value*>& visited, int indent, int precision) {
-    // Print the current value node
-    std::cout << std::string(indent, ' ') << "+---" << v.get_label() << "[ " << std::fixed << std::setprecision(precision) << v.get() << " ][ " << v.get_grad() << " ]" << (v.get_op().empty() ? "" : "(" + v.get_op() + ")") << std::endl;
-
-    // Recursively print the previous value nodes
-    for (const Value* prev : v.get_prev()) {
-        // If we haven't visited this node yet, print it
-        if (!visited.count(prev)) {
-            visited.insert(prev);
-            graph(*prev, visited, indent + 4, precision);
-        }
-        // Otherwise, just print an arrow to indicate a previously visited node
-        else {
-            std::cout << std::string(indent + 3, ' ') << "|   +" << std::endl;
-        }
-    }
-}
-
-void graph(const Value& v, int precision = 4) {
-    std::unordered_set<const Value*> visited;
-    visited.insert(&v);
-    graph(v, visited, 0, precision);
 }

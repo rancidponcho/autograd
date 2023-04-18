@@ -1,11 +1,10 @@
+#include "neuron.hpp"
 #include "utils.hpp"
 #include "value.hpp"
 
 // std
-#include <cmath>
-#include <iostream>
 
-double tan_h(double x) {
+float tan_h(float x) {
     return std::tanh(x);
 }
 
@@ -21,10 +20,8 @@ int main() {
     // dot product
     Value x1w1 = x1 * w1;
     x1w1.label("x1w1");
-
     Value x2w2 = x2 * w2;
     x2w2.label("x2w2");
-
     Value x1w1_x2w2 = x1w1 + x2w2;
     x1w1_x2w2.label("x1w1 + x2w2");
     // add bias
@@ -33,14 +30,15 @@ int main() {
     // output
     Value o = n.tanh();
     o.label("o");
-    o.grad(1.0);
+    // backprop
     o.backward();
-    n.backward();
-    x1w1_x2w2.backward();
-    x1w1.backward();
-    x2w2.backward();
 
-    graph(o);
+    o.graph();
+
+    // std::vector<Value> x{2.0, 0.0};
+
+    // Neuron neuron(2);
+    // neuron(x);
 
     return 0;
 }
