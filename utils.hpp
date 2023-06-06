@@ -9,8 +9,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "value.hpp"
-
 std::vector<float> arange(float start, float end, float step) {
     std::vector<float> result;
     for (float i = start; i < end; i += step) {

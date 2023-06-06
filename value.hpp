@@ -47,9 +47,18 @@ class Value {
         return out;
     }
 
+    Value& operator+=(Value& other) {
+        Value result = *this + other;
+        this->_data = result._data;
+        this->_prev.push_back(&other);
+        this->_op = "+";
+        this->_backward = result._backward;
+        return *this;
+    }
+
     Value tanh() {
         float t = std::tanh(this->_data);
-        Value out(t, {}, std::vector<Value*>{this}, "tanh");
+        Value out(t, "o", std::vector<Value*>{this}, "tanh");
         out._backward = [&, t]() {
             this->_grad += (1 - t * t) * out._grad;
         };
@@ -87,8 +96,8 @@ class Value {
    private:
     float _data;
     mutable float _grad{};
-    const std::vector<Value*> _prev;  // might need to converted to set for efficiency
-    const std::string _op;
+    std::vector<Value*> _prev;  // might need to converted to set for efficiency
+    std::string _op;
     std::string _label;
     std::function<void()> _backward;
 
