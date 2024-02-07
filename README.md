@@ -1,3 +1,5 @@
 Autograd
 
-Simply compile the main file and run the executable. Uses LibTorch.
+Simple automatic differentiator in C++.
+
+Simply compile the main file and run the executable.
